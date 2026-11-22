@@ -85,7 +85,7 @@ export const sfx = {
       return;
     }
     const f = SCALE[Math.min(Math.max(value - 1, 0), SCALE.length - 1)]! * (cpu ? 0.5 : 1);
-    tone(f, 0.2, cpu ? 'sine' : 'triangle', cpu ? 0.12 : 0.14, 0, 0, 3400);
+    tone(f, 0.2, cpu ? 'sine' : 'triangle', cpu ? 0.15 : 0.18, 0, 0, 3400);
     tone(f * 2, 0.1, 'sine', 0.03, 0.015);
     if (!cpu) buzz(7);
   },
@@ -100,7 +100,7 @@ export const sfx = {
   },
   clear(): void {
     [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
-      tone(f, 0.34, 'triangle', 0.11, i * 0.1, 0, 3400);
+      tone(f, 0.34, 'triangle', 0.15, i * 0.1, 0, 3400);
       tone(f * 2, 0.2, 'sine', 0.03, i * 0.1 + 0.02);
     });
     tone(1318.5, 0.6, 'sine', 0.05, 0.42);
