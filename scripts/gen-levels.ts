@@ -29,6 +29,8 @@ interface Spec {
   greedyGap: number;
   /** 同じ数が隣り合って並ぶ組が 1 つ以上ある */
   adjacentEqual?: boolean;
+  /** 両端のカードが同じ数（どちらを取っても今は同点。取ったあとに残る列で決まる） */
+  endsEqual?: boolean;
 }
 
 const SPEC: Spec[] = [
@@ -36,6 +38,7 @@ const SPEC: Spec[] = [
   { name: 'マイナスの わな', trick: 'マイナスのカードを相手に取らせる。端に出てきたら、押しつける順番を読む', n: [7, 7, 8, 8], lo: -6, hi: 9, margin: [2, 6], negatives: [2, 3], greedyGap: 4 },
   { name: 'ながい よみ', trick: '10 枚前後。3 手先より深く読まないと、唯一の勝ち筋を外す', n: [9, 9, 10, 10], lo: -6, hi: 9, margin: [2, 7], negatives: [2, 3], greedyGap: 5 },
   { name: 'ならぶ おなじ かず', trick: '同じ数が並ぶ。どちらの端を取っても同じに見えるが、残りの形が変わる。偶数枚と奇数枚で、最初の端の選びかたが変わる', n: [8, 9, 10, 11], lo: -5, hi: 9, margin: [1, 6], negatives: [2, 4], greedyGap: 3, adjacentEqual: true },
+  { name: 'おなじ はし', trick: '両端のカードが同じ数。どちらを取っても今は同点なので、取ったあとに残る列を比べて選ぶ', n: [7, 8, 9, 10], lo: -5, hi: 9, margin: [1, 6], negatives: [1, 3], greedyGap: 2, endsEqual: true },
 ];
 
 interface Found {
@@ -53,6 +56,10 @@ function find(spec: Spec, slot: number, n: number): Found | null {
       if (v === 0) v = 1;
       if (v < 0) neg++;
       cards.push(v);
+    }
+    if (spec.endsEqual) {
+      cards[n - 1] = cards[0]!;
+      neg = cards.filter((v) => v < 0).length;
     }
     if (neg < spec.negatives[0] || neg > spec.negatives[1]) continue;
     const best = optimalMargin(cards);
