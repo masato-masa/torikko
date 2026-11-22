@@ -3,6 +3,7 @@
 @import './shared/chrome.css';
 
 :root {
+  --level-cols: 4;
   /* あなた = 紫、CPU = 珊瑚。数字の読みやすさを優先して、地は白に近い */
   --me: #7f63c9;
   --me-soft: #e9e2fa;

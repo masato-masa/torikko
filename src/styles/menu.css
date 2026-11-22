@@ -12,83 +12,6 @@
   font-size: 2.2rem;
   letter-spacing: 0.06em;
 }
-.home-progress {
-  color: var(--star);
-  font-weight: 700;
-  font-size: 15px;
-}
-
-/* ---- ステージ選択 ---- */
-.worlds {
-  width: 100%;
-}
-.world {
-  margin-bottom: 22px;
-}
-.world-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin: 0 0 8px;
-  font-size: 0.95rem;
-  border-bottom: 2px solid var(--line);
-  padding-bottom: 6px;
-}
-.world-stars {
-  color: var(--star);
-  font-size: 0.85rem;
-}
-.level-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-.level-card {
-  appearance: none;
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  padding: 6px;
-  min-height: 64px;
-  transition: transform 80ms ease-out;
-}
-.level-card:active:not(.locked) {
-  transform: translateY(2px);
-  box-shadow: none;
-}
-.level-card.locked {
-  background: var(--surface-2);
-  color: var(--ink-soft);
-  cursor: default;
-  box-shadow: none;
-  opacity: 0.7;
-}
-.level-card.perfect {
-  border-color: var(--star);
-}
-.level-num {
-  font-size: 1.5rem;
-  font-weight: 800;
-  line-height: 1;
-}
-.level-stars {
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-}
-.lock {
-  font-size: 0.9rem;
-}
-
 /* ホームの絵: 数字のカードの列。両端を 2 人が取り合う。 */
 .home-hero {
   display: grid;
@@ -125,4 +48,10 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--muted);
+}
+
+.home-progress {
+  color: var(--star);
+  font-weight: 700;
+  font-size: 15px;
 }
