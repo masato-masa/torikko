@@ -88,4 +88,18 @@ export const settings = {
   setSfx(v: boolean): void {
     kv.set('torikko:sfx', v ? '1' : '0');
   },
+  /** やさしいモード: CPU がときどき最善でない手を打つ。★は 2 まで */
+  easy(): boolean {
+    return kv.get('torikko:easy') === '1';
+  },
+  setEasy(v: boolean): void {
+    kv.set('torikko:easy', v ? '1' : '0');
+  },
+  /** 初見のヒント（1 回だけ出す） */
+  seenTip(): boolean {
+    return kv.get('torikko:tip') === '1';
+  },
+  setSeenTip(): void {
+    kv.set('torikko:tip', '1');
+  },
 };

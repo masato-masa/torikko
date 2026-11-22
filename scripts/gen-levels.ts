@@ -27,12 +27,15 @@ interface Spec {
   negatives: [number, number];
   /** 「大きい端を取り続ける」が最善より何点以上悪いか */
   greedyGap: number;
+  /** 同じ数が隣り合って並ぶ組が 1 つ以上ある */
+  adjacentEqual?: boolean;
 }
 
 const SPEC: Spec[] = [
   { name: 'はしの えらび', trick: '大きい方の端を取るのが正解とは限らない。取ったあと相手に何が残るかを読む', n: [6, 6, 7, 7], lo: 1, hi: 9, margin: [1, 4], negatives: [0, 0], greedyGap: 3 },
   { name: 'マイナスの わな', trick: 'マイナスのカードを相手に取らせる。端に出てきたら、押しつける順番を読む', n: [7, 7, 8, 8], lo: -6, hi: 9, margin: [2, 6], negatives: [2, 3], greedyGap: 4 },
   { name: 'ながい よみ', trick: '10 枚前後。3 手先より深く読まないと、唯一の勝ち筋を外す', n: [9, 9, 10, 10], lo: -6, hi: 9, margin: [2, 7], negatives: [2, 3], greedyGap: 5 },
+  { name: 'ならぶ おなじ かず', trick: '同じ数が並ぶ。どちらの端を取っても同じに見えるが、残りの形が変わる。偶数枚と奇数枚で、最初の端の選びかたが変わる', n: [8, 9, 10, 11], lo: -5, hi: 9, margin: [1, 6], negatives: [2, 4], greedyGap: 3, adjacentEqual: true },
 ];
 
 interface Found {
@@ -60,6 +63,7 @@ function find(spec: Spec, slot: number, n: number): Found | null {
     const lo = Math.min(up, down);
     if (hi !== best || lo >= 0) continue;
     if (best - greedyMargin(cards) < spec.greedyGap) continue;
+    if (spec.adjacentEqual && !cards.some((v, i) => i > 0 && v === cards[i - 1])) continue;
     return { cards, best };
   }
   return null;

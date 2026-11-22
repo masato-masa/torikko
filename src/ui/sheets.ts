@@ -1,5 +1,6 @@
 // 遊びかた・設定・開発者メニュー。素の DOM で、開くときに作って body に足し、閉じるときに外す。
 import { isOn, setOn, sfx } from './sfx.ts';
+import { settings } from './storage.ts';
 import type { Progress } from './storage.ts';
 
 function openSheet(body: string, wire?: (root: HTMLElement, close: () => void) => void): void {
@@ -43,6 +44,10 @@ export function openSettingsSheet(): void {
        <span>効果音</span>
        <button class="switch mute-toggle" type="button" role="switch" aria-checked="${isOn()}" aria-label="効果音の入切"></button>
      </div>
+     <div class="sheet-row static">
+       <span>やさしいモード<small class="row-note">CPU が たまに まちがえる（★は 2 まで）</small></span>
+       <button class="switch easy-toggle" type="button" role="switch" aria-checked="${settings.easy()}" aria-label="やさしいモードの入切"></button>
+     </div>
      <button class="sheet-btn sheet-close" type="button">とじる</button>`,
     (root) => {
       const t = root.querySelector<HTMLButtonElement>('.mute-toggle')!;
@@ -51,6 +56,12 @@ export function openSettingsSheet(): void {
         setOn(next);
         t.setAttribute('aria-checked', String(next));
         if (next) sfx.take(5, false);
+      });
+      const e = root.querySelector<HTMLButtonElement>('.easy-toggle')!;
+      e.addEventListener('click', () => {
+        const next = !settings.easy();
+        settings.setEasy(next);
+        e.setAttribute('aria-checked', String(next));
       });
     },
   );

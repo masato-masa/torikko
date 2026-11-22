@@ -94,3 +94,33 @@ export function greedyMargin(cards: number[]): number {
 
 /** ★: 最善の差（optimal）以上で 3、勝てば 2、それ以外は 0（負け）。 */
 export const starsFor = (margin: number, optimal: number): 0 | 2 | 3 => (margin >= optimal ? 3 : margin > 0 ? 2 : 0);
+
+/** やさしいモードで、CPU が「次点の手」を打つ確率（損が EASY_SLIP 点以内のときだけ。測定は scripts/sim-easy.mts） */
+export const EASY_MISTAKE = 0.6;
+/** 次点の手との差がこの点数以内なら、人が見落としそうな差なので間違えてよい（大きな差を見逃すと不自然） */
+export const EASY_SLIP = 6;
+
+/** 決定的な 0〜1 の値（面の id と手の番号から）。同じ盤・同じ手順なら CPU の間違いも同じになる。 */
+export function hash01(key: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < key.length; i++) {
+    h ^= key.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  h ^= h >>> 15;
+  h = Math.imul(h, 0x2c1b3c6d);
+  h ^= h >>> 12;
+  return ((h >>> 0) % 100000) / 100000;
+}
+
+/**
+ * CPU の手。ふつうは最善。やさしいモードでは、最善と次点の差が EASY_SLIP 点以内のとき、確率 EASY_MISTAKE で次点の手を打つ
+ * （差が小さい手は人でも迷うので、不自然に見えない。大きな損になる手は打たない）。
+ */
+export function cpuSide(s: State, easy: boolean, key: string): Side {
+  const best = bestSide(s);
+  if (!easy || s.l === s.r) return best;
+  const [up, down] = sideValues(s);
+  if (Math.abs(up - down) > EASY_SLIP) return best;
+  return hash01(key) < EASY_MISTAKE ? ((1 - best) as Side) : best;
+}

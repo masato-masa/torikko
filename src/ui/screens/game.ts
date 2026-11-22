@@ -1,4 +1,5 @@
-import { type Side, type State, bestSide, initial, isOver, sideValues, starsFor, take } from '../../engine.ts';
+import { type Side, type State, bestSide, cpuSide, initial, isOver, sideValues, starsFor, take } from '../../engine.ts';
+import { settings } from '../storage.ts';
 import { getLevel, nextLevelId } from '../../levels.ts';
 import { iconBack, iconGear, iconHelp, iconHint, iconReset, iconUndo } from '../icons.ts';
 import { openHelpSheet, openSettingsSheet } from '../sheets.ts';
@@ -27,6 +28,8 @@ export function renderGame(root: HTMLElement, levelId: string, deps: Deps): () =
   let hintTimer = 0;
   let disposed = false;
   let over = false;
+  /** やさしいモード（面を開いた時点の設定。途中で変えても、この面は変わらない） */
+  const easy = settings.easy();
 
   let tiles = '';
   for (let i = 0; i < n; i++) tiles += `<div class="tile" data-i="${i}"><b${level.cards[i]! < 0 ? ' class="neg"' : ''}>${level.cards[i]}</b></div>`;
@@ -81,6 +84,11 @@ export function renderGame(root: HTMLElement, levelId: string, deps: Deps): () =
   const msg = q('.game-message');
   const tileEls = Array.from(boardEl.querySelectorAll<HTMLElement>('.tile'));
   if (!next) q('.next-btn').setAttribute('hidden', '');
+  if (!settings.seenTip()) {
+    toastEl.textContent = '上の半分を タップ = 上を とる。下の半分 = 下を とる';
+    toastEl.hidden = false;
+    toastTimer = window.setTimeout(() => (toastEl.hidden = true), 5000);
+  }
 
   const sign = (v: number): string => (v > 0 ? `+${v}` : String(v));
 
@@ -120,16 +128,20 @@ export function renderGame(root: HTMLElement, levelId: string, deps: Deps): () =
   function finish(): void {
     over = true;
     const margin = state.score[0] - state.score[1];
-    const stars = starsFor(margin, level.best);
+    const stars0 = starsFor(margin, level.best);
+    const stars = easy && stars0 === 3 ? 2 : stars0;
     winTimer = window.setTimeout(() => {
       if (disposed) return;
       q('.message-title').textContent = stars > 0 ? 'かち!' : 'まけ…';
       q('.stars').innerHTML = stars > 0 ? [0, 1, 2].map((i) => `<span class="star${i < stars ? ' on' : ''}" style="--i:${i}">★</span>`).join('') : '';
+      const score = `${state.score[0]} 対 ${state.score[1]}（${sign(margin)}）`;
       q('.message-moves').textContent =
         stars === 3
-          ? `${state.score[0]} 対 ${state.score[1]}（${sign(margin)}）— さいぜん!`
+          ? `${score} — さいぜん!`
           : stars === 2
-            ? `${state.score[0]} 対 ${state.score[1]}（${sign(margin)}）。さいぜんは ${sign(level.best)}`
+            ? easy
+              ? `${score}。やさしいモードは ★2 まで`
+              : `${score} ・ あと ${level.best - margin} 点で ★3`
             : `${state.score[0]} 対 ${state.score[1]}。はしの えらびかたを かえてみよう`;
       q('.next-btn').toggleAttribute('hidden', stars === 0 || !next);
       if (stars > 0) {
@@ -145,7 +157,7 @@ export function renderGame(root: HTMLElement, levelId: string, deps: Deps): () =
     render();
     cpuTimer = window.setTimeout(() => {
       if (disposed) return;
-      const side = bestSide(state);
+      const side = cpuSide(state, easy, `${level.id}:${state.l}:${state.r}`);
       const i = side === 0 ? state.l : state.r;
       state = take(state, side);
       popTile(i);
@@ -159,6 +171,10 @@ export function renderGame(root: HTMLElement, levelId: string, deps: Deps): () =
   function play(side: Side): void {
     if (busy || over || !msg.hidden || state.turn !== 0 || isOver(state)) return;
     clearHint();
+    if (!settings.seenTip()) {
+      settings.setSeenTip();
+      toastEl.hidden = true;
+    }
     history.push(state);
     const i = side === 0 ? state.l : state.r;
     state = take(state, side);
