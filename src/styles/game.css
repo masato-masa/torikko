@@ -1,0 +1,195 @@
+/* プレイ画面。ヘッダー・丸ボタン・ツール行・シートは shared/chrome.css が持つ。 */
+
+.game-screen {
+  gap: 4px;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none; /* 盤の操作で画面が動かない・ダブルタップで拡大しない */
+  -webkit-user-select: none;
+  user-select: none;
+}
+.status-bar {
+  gap: 10px;
+}
+.status-bar .stat-num {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.stat.me .stat-num {
+  color: var(--me);
+}
+.stat.cpu .stat-num {
+  color: var(--cpu);
+}
+.turn-cpu .stat.cpu {
+  box-shadow: 0 0 0 2px var(--cpu);
+}
+.game-screen:not(.turn-cpu) .stat.me {
+  box-shadow: 0 0 0 2px var(--me);
+}
+
+.board-wrap {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* 盤。カードは n 枚ぶんの固定の行で、取られても行は残る（盤が 1px も動かない）。 */
+.board {
+  position: relative;
+  width: min(100%, 420px);
+  height: min(calc(100dvh - 222px), calc(var(--n) * 58px + 12px));
+  display: grid;
+  grid-template-rows: repeat(var(--n), minmax(0, 1fr));
+  gap: 4px;
+  padding: 6px;
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  touch-action: none;
+  cursor: pointer;
+}
+
+.tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  border-radius: 10px;
+  background: var(--tile);
+  box-shadow: inset 0 0 0 2px var(--tile-line);
+  color: var(--title);
+  transition: background-color 120ms, opacity 120ms;
+}
+.tile b {
+  font-size: clamp(14px, 4.6dvh, 26px);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.tile[data-owner='-1'] b {
+  color: var(--title);
+}
+/* マイナスは赤。取る前から見分けられる */
+.tile:has(b.neg) b {
+  color: var(--neg);
+}
+.tile:not(.open) {
+  box-shadow: none;
+}
+.tile[data-owner='0'] {
+  background: var(--me-soft);
+}
+.tile[data-owner='0'] b {
+  color: var(--me);
+}
+.tile[data-owner='1'] {
+  background: var(--cpu-soft);
+}
+.tile[data-owner='1'] b {
+  color: var(--cpu);
+}
+.tile[data-owner='0']:not(.open),
+.tile[data-owner='1']:not(.open) {
+  opacity: 0.72;
+}
+
+/* いま取れるはしっこ（あなたの番だけ）: 太い枠と矢印 */
+.tile.end {
+  box-shadow: inset 0 0 0 3px var(--me);
+}
+.tile.end::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin-top: -6px;
+  border: 7px solid transparent;
+}
+.tile.end[data-end='top']::before {
+  border-bottom: 10px solid var(--me);
+  border-top: 0;
+}
+.tile.end[data-end='bottom']::before {
+  border-top: 10px solid var(--me);
+  border-bottom: 0;
+}
+.tile.hint {
+  animation: hintpulse 600ms ease-in-out infinite alternate;
+  box-shadow: inset 0 0 0 4px var(--star);
+}
+@keyframes hintpulse {
+  to {
+    background-color: #fff3cf;
+  }
+}
+.tile.taken {
+  animation: taken 220ms var(--ease);
+}
+@keyframes taken {
+  40% {
+    transform: scale(1.05);
+  }
+}
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  max-width: 92%;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.72);
+  color: #fff;
+  font-size: 13px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* クリア */
+.message-card {
+  text-align: center;
+}
+.message-title {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--title);
+}
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  font-size: 2.4rem;
+  margin: 2px 0;
+}
+.stars .star {
+  display: inline-block;
+  color: var(--star-off);
+  animation: starin 360ms var(--ease) both;
+  animation-delay: calc(var(--i) * 140ms + 120ms);
+}
+.stars .star.on {
+  color: var(--star);
+}
+@keyframes starin {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+.message-moves {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.message-buttons {
+  display: grid;
+  gap: 8px;
+}

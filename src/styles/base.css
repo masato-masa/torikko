@@ -1,0 +1,38 @@
+/* 共通のクロームは shared/ にある（出どころは C:\claude\shared-ui）。ここはこのゲームの色と外枠。 */
+@import './shared/tokens.css';
+@import './shared/chrome.css';
+
+:root {
+  /* あなた = 紫、CPU = 珊瑚。数字の読みやすさを優先して、地は白に近い */
+  --me: #7f63c9;
+  --me-soft: #e9e2fa;
+  --cpu: #e0674e;
+  --cpu-soft: #fbe3dc;
+  --tile: #ffffff;
+  --tile-line: #e3dfd6;
+  --neg: #b23c3c;
+  --star: #f3c55a;
+  --star-off: #e4dcd5;
+  --ink: var(--title);
+  --ink-soft: var(--muted);
+  --radius: 14px;
+  --shadow: var(--shadow-xs);
+}
+
+html,
+body {
+  min-height: 100%;
+  overscroll-behavior: none;
+}
+
+.app {
+  max-width: 592px;
+  margin: 0 auto;
+}
+
+.star {
+  color: var(--star-off);
+}
+.star.on {
+  color: var(--star);
+}
