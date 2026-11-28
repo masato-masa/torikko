@@ -85,7 +85,7 @@ export function renderGame(root: HTMLElement, levelId: string, deps: Deps): () =
   const tileEls = Array.from(boardEl.querySelectorAll<HTMLElement>('.tile'));
   if (!next) q('.next-btn').setAttribute('hidden', '');
   if (!settings.seenTip()) {
-    toastEl.textContent = '上の半分を タップ = 上を とる。下の半分 = 下を とる';
+    toastEl.textContent = '上を タップ＝上を とる ／ 下を タップ＝下を とる';
     toastEl.hidden = false;
     toastTimer = window.setTimeout(() => (toastEl.hidden = true), 5000);
   }

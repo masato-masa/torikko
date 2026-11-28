@@ -140,16 +140,26 @@
 .toast {
   position: absolute;
   left: 50%;
-  bottom: 12px;
+  top: -38px; /* 盤の上の余白に出す（数字にかぶせない） */
   transform: translateX(-50%);
-  max-width: 92%;
-  padding: 8px 14px;
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
+  padding: 7px 14px;
   border-radius: 999px;
   background: rgb(0 0 0 / 0.72);
   color: #fff;
   font-size: 13px;
   text-align: center;
   pointer-events: none;
+}
+
+@media (max-height: 640px) {
+  .toast {
+    top: -31px;
+    padding: 4px 12px;
+    font-size: 12px;
+  }
 }
 
 /* クリア */
